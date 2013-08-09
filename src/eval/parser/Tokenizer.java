@@ -1,4 +1,4 @@
-package parser;
+package eval.parser;
 
 import java.util.ArrayList;
 
@@ -8,9 +8,6 @@ import java.util.ArrayList;
  * @author Zakhar Voit(zakharvoit@gmail.com)
  */
 public class Tokenizer {
-    final String source;
-    int pos = 0;
-
     /**
      * Use this function to get list of tokens from some source code.
      *
@@ -23,8 +20,12 @@ public class Tokenizer {
         return tok.tokens;
     }
 
+    final String source;
+    int pos = 0;
+    ArrayList<Token> tokens = new ArrayList<>();
+
     public static final class Token {
-        static enum TokenType {
+        public static enum TokenType {
             OPEN_PAR,
             CLOSE_PAR,
             CONST,
@@ -48,9 +49,17 @@ public class Tokenizer {
             this.type = TokenType.CONST;
             this.constVal = val;
         }
-    }
 
-    ArrayList<Token> tokens;
+        @Override
+        public String toString() {
+            if (type == TokenType.ID)
+                return "'" + idName + "'";
+            else if (type == TokenType.CONST)
+                return "'" + constVal + "'";
+            else
+                return "'" + type.toString() + "'";
+        }
+    }
 
     Tokenizer(String source) {
         this.source = source;
@@ -63,7 +72,7 @@ public class Tokenizer {
     }
 
     boolean isLetterOrDigit(char c) {
-        return ('a' <= c && c <= 'z') || ('0' <= c && c <= '9');
+        return (c == '_') || ('a' <= c && c <= 'z') || ('0' <= c && c <= '9');
     }
 
     void parseNextId() {
@@ -74,6 +83,7 @@ public class Tokenizer {
             ++pos;
             while (pos < source.length() && isLetterOrDigit(source.charAt(pos))) {
                 res.append(source.charAt(pos));
+                ++pos;
             }
             tokens.add(new Token(res.toString()));
         } else {
