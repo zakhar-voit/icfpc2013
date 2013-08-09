@@ -3,23 +3,23 @@ package network;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import java.net.*;
-import java.io.*;
-import java.lang.*;
-import java.util.*;
+
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
- * Created with IntelliJ IDEA.
- * User: izban
- * Date: 09.08.13
- * Time: 17:50
- * To change this template use File | Settings | File Templates.
+ * @author Ilya Zban(izban@mail.ru)
  */
 
+@SuppressWarnings("unchecked")
 public class Network {
 
     String getSecret() {
-        return new Secret().secret;
+        return SecretReader.readSecret();
     }
 
     String getURL(String x) {
@@ -32,7 +32,7 @@ public class Network {
 
         try {
             myUrl = new URL(getURL(x));
-            myConnect = (HttpURLConnection)myUrl.openConnection();
+            myConnect = (HttpURLConnection) myUrl.openConnection();
             myConnect.setRequestMethod("POST");
 
             myConnect.setDoOutput(true);
@@ -47,7 +47,7 @@ public class Network {
             if (in.hasNextLine()) s = in.nextLine();
 
             JSONParser parser = new JSONParser();
-            JSONObject res = (JSONObject)parser.parse(s);
+            JSONObject res = (JSONObject) parser.parse(s);
 
             in.close();
             return res;
@@ -59,10 +59,11 @@ public class Network {
         return new JSONObject();
     }
 
-    public String eval(String program, ArrayList<Long> x) {
+    public String eval(String program, long[] args) {
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
-        for (int i = 0; i < x.size(); i++) arr.add(x.get(i));
+        for (Long arg : args)
+            arr.add(arg);
         obj.put("program", program);
         obj.put("arguments", arr);
         JSONObject res = Submit("eval", obj);

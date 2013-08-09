@@ -1,11 +1,7 @@
 package network;
 
 /**
- * Created with IntelliJ IDEA.
- * User: izban
- * Date: 09.08.13
- * Time: 18:33
- * To change this template use File | Settings | File Templates.
+ * @author Ilya Zban(izban@mail.ru)
  */
 public class Main {
 
