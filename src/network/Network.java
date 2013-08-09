@@ -76,5 +76,7 @@ public class Network {
         toSubmit.put("program", fromTrain.get("challenge"));
         JSONObject fromGuess = Submit("guess", toSubmit);
         System.out.println(fromGuess.toString());
+        System.out.println(arr.toString());
     }
 }
+
