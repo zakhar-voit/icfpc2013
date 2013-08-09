@@ -26,7 +26,7 @@ public class Network {
         return "http://icfpc2013.cloudapp.net/" + x + "?auth=" + getSecret();
     }
 
-    static private JSONObject Submit(String x, JSONObject request) {
+    static public JSONObject Submit(String x, JSONObject request) {
         URL myUrl;
         HttpURLConnection myConnect = null;
 
