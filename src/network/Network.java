@@ -26,38 +26,6 @@ public class Network {
         return "http://icfpc2013.cloudapp.net/" + x + "?auth=" + getSecret();
     }
 
-    /*private JSONObject eval(JSONObject request) {
-        JSONObject res = new JSONObject();
-        URL myUrl;
-        HttpURLConnection myConnect = null;
-
-        try {
-            myUrl = new URL(getURL("eval"));
-            myConnect = (HttpURLConnection)myUrl.openConnection();
-            myConnect.setRequestMethod("POST");
-
-            myConnect.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(myConnect.getOutputStream());
-            wr.writeBytes(request.toString());
-            wr.flush();
-            wr.close();
-
-            InputStream is = myConnect.getInputStream();
-            Scanner in = new Scanner(is);
-            if (in.hasNextLine()) {
-                JSONParser parser = new JSONParser();
-                res = (JSONObject)parser.parse(in.nextLine());
-            }
-
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (myConnect != null) myConnect.disconnect();
-        }
-        return res;
-    }                */
-
     private JSONObject Submit(String x, JSONObject request) {
         URL myUrl;
         HttpURLConnection myConnect = null;
