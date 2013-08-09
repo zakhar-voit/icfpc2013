@@ -1,5 +1,8 @@
 package network;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import java.net.*;
 import java.io.*;
 import java.lang.*;
@@ -14,40 +17,96 @@ import java.util.*;
  */
 
 public class Network {
-    public void Run() {
+
+    String getSecret() {
+        return new Secret().secret;
+    }
+
+    String getURL(String x) {
+        return "http://icfpc2013.cloudapp.net/" + x + "?auth=" + getSecret();
+    }
+
+    /*private JSONObject eval(JSONObject request) {
+        JSONObject res = new JSONObject();
         URL myUrl;
         HttpURLConnection myConnect = null;
 
         try {
-            String request = "request body TrainRequest";
-            myUrl = new URL("http://icfpc2013.cloudapp.net/train?auth=03666BdvADBV1jujD9NNrr9pD3NJENbYB2r41s2WvpsH1H");
+            myUrl = new URL(getURL("eval"));
             myConnect = (HttpURLConnection)myUrl.openConnection();
+            myConnect.setRequestMethod("POST");
 
-            /*myConnect.setRequestMethod("POST");
-            myConnect.setRequestProperty("Content-Length", "" + Integer.toString(request.getBytes().length));
-
-            myConnect.setUseCaches (false);
-            myConnect.setDoInput(true);
             myConnect.setDoOutput(true);
-
             DataOutputStream wr = new DataOutputStream(myConnect.getOutputStream());
-            wr.writeBytes(request);
+            wr.writeBytes(request.toString());
             wr.flush();
-            wr.close();      */
+            wr.close();
 
             InputStream is = myConnect.getInputStream();
             Scanner in = new Scanner(is);
-            while (in.hasNextLine()) {
-                System.out.println(in.nextLine());
+            if (in.hasNextLine()) {
+                JSONParser parser = new JSONParser();
+                res = (JSONObject)parser.parse(in.nextLine());
             }
 
-
             in.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (myConnect != null) myConnect.disconnect();
         }
+        return res;
+    }                */
+
+    private JSONObject Submit(String x, JSONObject request) {
+        URL myUrl;
+        HttpURLConnection myConnect = null;
+
+        try {
+            myUrl = new URL(getURL(x));
+            myConnect = (HttpURLConnection)myUrl.openConnection();
+            myConnect.setRequestMethod("POST");
+
+            myConnect.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(myConnect.getOutputStream());
+            wr.writeBytes(request.toString());
+            wr.flush();
+            wr.close();
+
+            InputStream is = myConnect.getInputStream();
+            Scanner in = new Scanner(is);
+            String s = "{}";
+            if (in.hasNextLine()) s = in.nextLine();
+
+            JSONParser parser = new JSONParser();
+            JSONObject res = (JSONObject)parser.parse(s);
+
+            in.close();
+            return res;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (myConnect != null) myConnect.disconnect();
+        }
+        return new JSONObject();
+    }
+
+    public void run() {
+        JSONObject fromTrain = new Network().Submit("train", new JSONObject());
+        System.out.println(fromTrain.toString());
+
+        JSONObject toEval = new JSONObject();
+        toEval.put("id", fromTrain.get("id"));
+        JSONArray arr = new JSONArray();
+        Random rnd = new Random();
+        for (int i = 0; i < 10; i++) arr.add(rnd.nextInt(1000000000));
+        toEval.put("arguments", arr);
+        System.out.println(Submit("eval", toEval));
+
+        JSONObject toSubmit = new JSONObject();
+        toSubmit.put("id", fromTrain.get("id"));
+        toSubmit.put("program", fromTrain.get("challenge"));
+        JSONObject fromGuess = Submit("guess", toSubmit);
+        System.out.println(fromGuess.toString());
     }
 }
