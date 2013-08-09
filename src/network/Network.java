@@ -18,15 +18,15 @@ import java.util.Scanner;
 @SuppressWarnings("unchecked")
 public class Network {
 
-    String getSecret() {
+    static String getSecret() {
         return SecretReader.readSecret();
     }
 
-    String getURL(String x) {
+    static String getURL(String x) {
         return "http://icfpc2013.cloudapp.net/" + x + "?auth=" + getSecret();
     }
 
-    private JSONObject Submit(String x, JSONObject request) {
+    static private JSONObject Submit(String x, JSONObject request) {
         URL myUrl;
         HttpURLConnection myConnect = null;
 
@@ -59,11 +59,11 @@ public class Network {
         return new JSONObject();
     }
 
-    public String eval(String program, long[] args) {
+    static public String eval(String program, long[] args) {
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
         for (Long arg : args)
-            arr.add(arg);
+            arr.add(Long.toHexString(arg));
         obj.put("program", program);
         obj.put("arguments", arr);
         JSONObject res = Submit("eval", obj);
@@ -74,7 +74,7 @@ public class Network {
         } else return "-1";
     }
 
-    public void run() {
+    static public void run() {
         JSONObject fromTrain = new Network().Submit("train", new JSONObject());
         System.out.println(fromTrain.toString());
 

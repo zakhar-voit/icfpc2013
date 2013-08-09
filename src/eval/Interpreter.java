@@ -160,25 +160,25 @@ public class Interpreter {
 
     long evalAnd(Parser.Node exp) {
         long val1 = evalExpression(exp.children[0]);
-        long val2 = evalExpression(exp.children[0]);
+        long val2 = evalExpression(exp.children[1]);
         return val1 & val2;
     }
 
     long evalOr(Parser.Node exp) {
         long val1 = evalExpression(exp.children[0]);
-        long val2 = evalExpression(exp.children[0]);
+        long val2 = evalExpression(exp.children[1]);
         return val1 | val2;
     }
 
     long evalXor(Parser.Node exp) {
         long val1 = evalExpression(exp.children[0]);
-        long val2 = evalExpression(exp.children[0]);
+        long val2 = evalExpression(exp.children[1]);
         return val1 ^ val2;
     }
 
     long evalPlus(Parser.Node exp) {
         long val1 = evalExpression(exp.children[0]);
-        long val2 = evalExpression(exp.children[0]);
+        long val2 = evalExpression(exp.children[1]);
         return val1 + val2;
     }
 }

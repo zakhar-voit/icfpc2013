@@ -58,6 +58,7 @@ public class Parser {
         public Node(NodeType type, String name, long val, Node... children) {
             this.type = type;
             this.name = name;
+            this.val = val;
             this.children = children;
         }
     }
