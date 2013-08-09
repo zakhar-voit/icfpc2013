@@ -59,6 +59,20 @@ public class Network {
         return new JSONObject();
     }
 
+    public String eval(String program, ArrayList<Long> x) {
+        JSONObject obj = new JSONObject();
+        JSONArray arr = new JSONArray();
+        for (int i = 0; i < x.size(); i++) arr.add(x.get(i));
+        obj.put("program", program);
+        obj.put("arguments", arr);
+        JSONObject res = Submit("eval", obj);
+
+        String s = res.get("status").toString();
+        if (s.equals("ok")) {
+            return res.get("outputs").toString();
+        } else return "-1";
+    }
+
     public void run() {
         JSONObject fromTrain = new Network().Submit("train", new JSONObject());
         System.out.println(fromTrain.toString());
