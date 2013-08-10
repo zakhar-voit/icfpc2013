@@ -49,7 +49,7 @@ public class Solver {
                 }
 
                 for (int j = 0; j < choice.length; j++) if (submitter.isAllowed(choice2[j])) {
-                    if (j >= 3 && balance == 4) break;
+                    if (j >= 3 && balance == 5) break;
                     cur = s1 + choice[j] + s2;
                     if (rec()) return true;
                 }
@@ -69,7 +69,7 @@ public class Solver {
             for (Object anArr : arr) {
                 JSONObject cur = (JSONObject) anArr;
                 Out.println(cur.toString());
-                if (cur.get("size").toString().equals("5") && !cur.containsKey("solved")) {
+                if (cur.get("size").toString().equals("6") && (!cur.containsKey("solved") || cur.get("solved").toString().equals("false"))) {
                     System.out.println(cur.toString());
                     run(cur.get("id").toString(), (JSONArray)cur.get("operators"));
                     try {
@@ -88,11 +88,19 @@ public class Solver {
 
     public String randID(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 5);
+        sbmt.put("size", 6);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
         perm = (JSONArray)lol.get("operators");
         return lol.get("id").toString();
+    }
+
+    public static JSONObject randID_1(boolean f) {
+        JSONObject sbmt = new JSONObject();
+        sbmt.put("size", 6);
+        JSONObject lol = Network.Submit("train", sbmt);
+        if (f) System.out.println(lol.get("challenge").toString());
+        return lol;
     }
 
     public void run(String ID, JSONArray arr) {
