@@ -30,6 +30,11 @@ public class Interpreter {
     public static long[] eval(String source, long[] args) {
         long[] res = new long[args.length];
         Parser.Node root = Parser.parse(source);
+        return eval(root, args);
+    }
+
+    public static long[] eval(Parser.Node root, long[] args) {
+        long[] res = new long[args.length];
         Interpreter interpreter = new Interpreter(root);
         for (int i = 0; i < args.length; i++) {
             res[i] = interpreter.eval(args[i]);
