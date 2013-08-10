@@ -101,6 +101,7 @@ public class Solver {
         else id = ID;
 
         submitter = new ServerSubmitter(id);
+
         a0 = new long[7];
         for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
         a0[0] = 0;
