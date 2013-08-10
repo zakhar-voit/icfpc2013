@@ -14,6 +14,7 @@ import java.util.Random;
 /**
  * @author Ilya Zban(izban@mail.ru)
  */
+@SuppressWarnings("unchecked")
 public class Solver {
 
     String cur;
@@ -27,9 +28,8 @@ public class Solver {
         boolean ok = true;
 
         for (int i = 0; i < b.length; i++) ok &= b[i] == a[i];
-        if (!ok) return false;
+        return ok && submitter.guess(s);
 
-        return submitter.guess(s);
     }
 
     boolean rec() {
@@ -56,10 +56,7 @@ public class Solver {
                 break;
             }
         }
-        if (ok) {
-            return tryCheck(cur);
-        }
-        return false;
+        return ok && tryCheck(cur);
     }
 
     public void getProblems() {
@@ -67,8 +64,8 @@ public class Solver {
             JSONObject tr = Network.Submit("myproblems", new JSONObject());
             JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
-            for (int i = 0; i < arr.size(); i++) {
-                JSONObject cur = (JSONObject) arr.get(i);
+            for (Object anArr : arr) {
+                JSONObject cur = (JSONObject) anArr;
                 Out.println(cur.toString());
                 if (false && cur.get("size").toString().equals("4") && !cur.containsKey("solved")) {
                     System.out.println(cur.toString());
