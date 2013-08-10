@@ -4,6 +4,11 @@ import eval.Interpreter;
 import eval.InterpreterTest;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Random;
 /**
  * Created with IntelliJ IDEA.
@@ -16,7 +21,7 @@ public class Solver {
 
     String cur;
     String id;
-    final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)"};
+    final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(if0 e e e)"};
     long[] a, a0;
 
 
@@ -25,8 +30,14 @@ public class Solver {
         boolean ok = true;
 
         for (int i = 0; i < b.length; i++) ok &= b[i] == a[i];
+        if (!ok) return false;
 
-        return ok;
+        JSONObject obj = new JSONObject();
+        obj.put("id", id);
+        obj.put("program", s);
+        JSONObject result = Network.Submit("guess", obj);
+        if (result.get("status").toString().equals("win")) return true;
+        return false;
     }
 
     boolean rec() {
@@ -43,7 +54,7 @@ public class Solver {
                     if (j > i) s2 += cur.charAt(j);
                 }
 
-                for (int j = 0; j < 10; j++) {
+                for (int j = 0; j < choice.length; j++) {
                     if (j >= 3 && balance == 3) break;
                     cur = s1 + choice[j] + s2;
                     if (rec()) return true;
@@ -60,8 +71,14 @@ public class Solver {
     }
 
     public void getProblems() {
-        JSONObject tr = Network.Submit("myproblems", new JSONObject());
-        System.out.println(tr.toString());
+        try {
+            JSONObject tr = Network.Submit("myproblems", new JSONObject());
+            JSONArray arr = (JSONArray)tr.get("lol");
+            PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
+            for (int i = 0; i < arr.size(); i++) Out.println(arr.get(i));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
@@ -70,7 +87,6 @@ public class Solver {
         id = tr.get("id").toString();
         System.out.println(tr.get("challenge").toString());
 
-        //a0 = new long[2];
         a0 = new long[7];
         for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
         a0[0] = 0; a0[1] = 1; for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
@@ -79,7 +95,6 @@ public class Solver {
         for (int i = 0; i < a0.length; i++) arr.add(Long.toHexString(a0[i]));
         JSONObject query = new JSONObject();
         query.put("id", id);
-        //query.put("program", "(lambda (x) (xor (or x 1) (and x x)))");
         query.put("arguments", arr);
         String res = Network.Submit("eval", query).get("outputs").toString();
         a = ResponceUtils.parseResponse(res);
@@ -87,12 +102,7 @@ public class Solver {
         cur = "(lambda (x) e)";
         if (rec()) {
             System.out.println(cur);
-            JSONObject obj = new JSONObject();
-            obj.put("id", id);
-            obj.put("program", cur);
-            JSONObject result = Network.Submit("guess", obj);
-            if (result.get("status").toString().equals("win")) System.out.print("YYEEEAAAH");
-            else System.out.println(result.get("values").toString());
+            System.out.println("YYYEEEEAAAHH");
         } else System.out.println("Nothing found");
     }
 }

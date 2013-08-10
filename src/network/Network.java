@@ -49,8 +49,12 @@ public class Network {
             String s = "{}";
             if (in.hasNextLine()) s = in.nextLine();
             if (x.equals("myproblems")) {
-                System.out.println(s);
-                return new JSONObject();
+                JSONObject res = new JSONObject();
+                JSONParser parser = new JSONParser();
+                JSONArray arr;
+                arr = (JSONArray)parser.parse(s);
+                res.put("lol", arr);
+                return res;
             }
             JSONParser parser = new JSONParser();
             JSONObject res = (JSONObject) parser.parse(s);
@@ -80,7 +84,7 @@ public class Network {
         } else return "-1";
     }
 
-    static public void run() {
+    /*static public void run() {
         JSONObject fromTrain = new Network().Submit("train", new JSONObject());
         System.out.println(fromTrain.toString());
 
@@ -98,6 +102,6 @@ public class Network {
         JSONObject fromGuess = Submit("guess", toSubmit);
         System.out.println(fromGuess.toString());
         System.out.println(arr.toString());
-    }
+    }          */
 }
 
