@@ -20,7 +20,9 @@ public class Solver {
     String cur;
     String id;
     static public final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(if0 e e e)"};
-    static public final String choice2[]= {"x", "0", "1", "not",     "or",       "and",       "xor",       "plus",       "shl1",     "shr1",     "shr4",     "shr16",     "if0",       "fold"};
+    static public final String choice2[] = {"x", "0", "1", "not", "or", "and", "xor", "plus", "shl1", "shr1", "shr4", "shr16", "if0", "fold"};
+    static public final int SIZE = 7;
+
     long[] a, a0;
     ServerSubmitter submitter;
     JSONArray perm;
@@ -48,11 +50,12 @@ public class Solver {
                     if (j > i) s2 += cur.charAt(j);
                 }
 
-                for (int j = 0; j < choice.length; j++) if (submitter.isAllowed(choice2[j])) {
-                    if (j >= 3 && balance == 5) break;
-                    cur = s1 + choice[j] + s2;
-                    if (rec()) return true;
-                }
+                for (int j = 0; j < choice.length; j++)
+                    if (submitter.isAllowed(choice2[j])) {
+                        if (j >= 3 && balance == 5) break;
+                        cur = s1 + choice[j] + s2;
+                        if (rec()) return true;
+                    }
 
                 ok = false;
                 break;
@@ -63,15 +66,15 @@ public class Solver {
 
     public void getProblems() {
         try {
-            JSONObject tr = Network.Submit("myproblems", new JSONObject());
+            JSONObject tr = Network.submit("myproblems", new JSONObject());
             JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
             for (Object anArr : arr) {
                 JSONObject cur = (JSONObject) anArr;
                 Out.println(cur.toString());
-                if (cur.get("size").toString().equals("6") && (!cur.containsKey("solved") || cur.get("solved").toString().equals("false"))) {
+                if (cur.get("size").toString().equals("SIZE") && (!cur.containsKey("solved") || cur.get("solved").toString().equals("false"))) {
                     System.out.println(cur.toString());
-                    run(cur.get("id").toString(), (JSONArray)cur.get("operators"));
+                    run(cur.get("id").toString(), (JSONArray) cur.get("operators"));
                     try {
                         Thread.sleep(25000);
                     } catch (Exception e) {
@@ -88,17 +91,17 @@ public class Solver {
 
     public String randID(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 6);
-        JSONObject lol = Network.Submit("train", sbmt);
+        sbmt.put("size", SIZE);
+        JSONObject lol = Network.submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
-        perm = (JSONArray)lol.get("operators");
+        perm = (JSONArray) lol.get("operators");
         return lol.get("id").toString();
     }
 
     public static JSONObject randID_1(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 6);
-        JSONObject lol = Network.Submit("train", sbmt);
+        sbmt.put("size", SIZE);
+        JSONObject lol = Network.submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
         return lol;
     }
@@ -115,12 +118,14 @@ public class Solver {
         submitter = new ServerSubmitter(id, perm);
 
         a0 = new long[15];
-        for (int i = 2; i < 15; i++) a0[i] = Math.abs(rnd.nextLong()) % ((long)1e15);
+        for (int i = 2; i < 15; i++) a0[i] = Math.abs(rnd.nextLong()) % ((long) 1e15);
         a0[0] = 0;
         a0[1] = 1;
         for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
 
         a = submitter.eval(a0);
+
+        long time = System.currentTimeMillis();
 
         cur = "(lambda (x) e)";
         if (rec()) {
@@ -128,5 +133,7 @@ public class Solver {
             System.out.println("YYYEEEEAAAHH");
         } else
             System.out.println("Nothing found");
+
+        System.out.println("time: " + (System.currentTimeMillis() - time) + " ms");
     }
 }

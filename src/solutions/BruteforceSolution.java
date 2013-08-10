@@ -4,7 +4,9 @@ import eval.Interpreter;
 import eval.parser.Parser;
 import network.Submitter;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -12,13 +14,18 @@ import java.util.Random;
  */
 public class BruteforceSolution {
     final boolean DEBUG;
-    final boolean USE_TERNARY_OPERATIONS = true;
+    final boolean USE_TERNARY_OPERATIONS = false;
 
     final Submitter submitter;
 
     final int ARGS_CNT = 20;
     final long MAX_ARG = (long) 1e15;
-    final int DEEP = 3;
+    final int DEEP = 4;
+    final int SIZE = Solver.SIZE;
+
+    int size = 0;
+
+    long time;
 
     final Parser.Node MAIN_ARG = new Parser.Node(Parser.Node.NodeType.ID, "x0", 0);
 
@@ -30,6 +37,7 @@ public class BruteforceSolution {
     Parser.Node root = new Parser.Node(Parser.Node.NodeType.FUNCTION1, "lambda", 0, MAIN_ARG, null);
 
     Parser.Node[] nextChildren;
+    Parser.Node nextParent;
     int nextChild;
     int nextDeep;
 
@@ -63,14 +71,58 @@ public class BruteforceSolution {
     boolean tryToSubmit() {
         if (Arrays.equals(Interpreter.eval(root, args), result)
                 && submitter.guess(root.toString())) {
-            if (DEBUG)
+            if (DEBUG) {
                 System.out.println(root);
+                System.out.println("Work time: " + (System.currentTimeMillis() - time) + " ms");
+            }
             return true;
         }
         return false;
     }
 
-    boolean findNextChild(Parser.Node cur, int deep) {
+    class BfsPosition {
+        Parser.Node[] children;
+        int pos;
+        int deep;
+
+        public BfsPosition(Parser.Node[] children, int pos, int deep) {
+            this.children = children;
+            this.pos = pos;
+            this.deep = deep;
+        }
+    }
+
+    @SuppressWarnings("unused")
+    boolean findNextChildBfs(Parser.Node cur, int deep) {
+        if (cur == null)
+            throw new RuntimeException("something wrong");
+
+        assert cur == root;
+
+        Queue<BfsPosition> q = new ArrayDeque<>();
+        q.add(new BfsPosition(cur.children, 1, 0));
+
+        while (!q.isEmpty()) {
+            BfsPosition top = q.poll();
+            Parser.Node[] curChildren = top.children;
+            int pos = top.pos;
+            int curDeep = top.deep;
+
+            if (curChildren[pos] == null) {
+                nextChildren = curChildren;
+                nextChild = pos;
+                nextDeep = curDeep;
+                return true;
+            }
+            for (int i = 0; i < curChildren[pos].children.length; i++) {
+                q.add(new BfsPosition(curChildren[pos].children, i, curDeep + 1));
+            }
+        }
+
+        return false;
+    }
+
+    boolean findNextChildDfs(Parser.Node cur, int deep) {
         if (cur == null)
             throw new RuntimeException("something wrong...");
 
@@ -79,9 +131,10 @@ public class BruteforceSolution {
                 nextChildren = cur.children;
                 nextChild = i;
                 nextDeep = deep;
+                nextParent = cur;
                 return true;
             }
-            if (findNextChild(cur.children[i], deep + 1))
+            if (findNextChildDfs(cur.children[i], deep + 1))
                 return true;
         }
 
@@ -89,37 +142,49 @@ public class BruteforceSolution {
     }
 
     boolean rec(boolean wasFold) {
-        if (!findNextChild(root, 0)) {
+        if (!findNextChildDfs(root, 0)) {
             if (tryToSubmit())
                 return true;
         } else {
             Parser.Node[] currentChildren = nextChildren;
+            Parser.Node currentParent = nextParent;
             int currentChild = nextChild;
             int currentDeep = nextDeep;
 
             /* Make const node */
             for (int val = 0; val < 2; val++) {
                 currentChildren[currentChild] = new Parser.Node(Parser.Node.NodeType.CONST, "const", val);
+                ++size;
                 if (rec(wasFold))
                     return true;
+                --size;
             }
 
             /* Make ID node */
             for (int name = 0; name < currentVar; name++) {
                 currentChildren[currentChild] = new Parser.Node(Parser.Node.NodeType.ID, "x" + name, 0);
+                ++size;
                 if (rec(wasFold))
                     return true;
+                --size;
             }
 
-            if (currentDeep < DEEP) {
+            if (currentDeep < DEEP && size < SIZE) {
                 /* Make unary operations */
                 for (String unaryOp : UNARY_OPS) {
                     if (!submitter.isAllowed(unaryOp))
                         continue;
+
+                    /* (not not) -> () heuristic */
+                    if (currentParent.name.equals("not") && unaryOp.equals("not"))
+                        continue;
+
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.UNARY_OP, unaryOp, 0, new Parser.Node[]{null});
+                    ++size;
                     if (rec(wasFold))
                         return true;
+                    --size;
                 }
 
                 /* Make binary operations */
@@ -128,8 +193,10 @@ public class BruteforceSolution {
                         continue;
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.BINARY_OP, binaryOp, 0, null, null);
+                    ++size;
                     if (rec(wasFold))
                         return true;
+                    --size;
                 }
 
                 if (USE_TERNARY_OPERATIONS) {
@@ -143,16 +210,20 @@ public class BruteforceSolution {
                                 new Parser.Node(Parser.Node.NodeType.TERNARY_OP, "fold", 0, null, null,
                                         new Parser.Node(Parser.Node.NodeType.FUNCTION2, "lambda", 0,
                                                 firstArg, secondArg, null));
+                        ++size;
                         if (rec(wasFold))
                             return true;
+                        --size;
                     }
 
                 /* Make if0 */
                     if (submitter.isAllowed("if0")) {
                         currentChildren[currentChild] =
                                 new Parser.Node(Parser.Node.NodeType.TERNARY_OP, "if0", 0, null, null, null);
+                        ++size;
                         if (rec(wasFold))
                             return true;
+                        --size;
                     }
                 }
             }
@@ -165,6 +236,7 @@ public class BruteforceSolution {
     boolean solve() {
         args = generateArgs();
         result = submitter.eval(args);
+        time = System.currentTimeMillis();
         return rec(false);
     }
 }

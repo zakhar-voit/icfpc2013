@@ -45,7 +45,7 @@ public class ServerSubmitter implements Submitter {
         JSONArray arr = new JSONArray();
         for (long anA : a) arr.add(Long.toHexString(anA));
         obj.put("arguments", arr);
-        obj = Network.Submit("eval", obj);
+        obj = Network.submit("eval", obj);
         String s = obj.get("outputs").toString();
         return ResponseUtils.parseResponse(s);
     }
@@ -53,6 +53,6 @@ public class ServerSubmitter implements Submitter {
     public boolean guess(String program) {
         JSONObject obj = new JSONObject(start);
         obj.put("program", program);
-        return !start.containsKey("id") || Network.Submit("guess", obj).get("status").toString().equals("win");
+        return !start.containsKey("id") || Network.submit("guess", obj).get("status").toString().equals("win");
     }
 }

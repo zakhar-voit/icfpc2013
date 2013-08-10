@@ -9,7 +9,7 @@ public class LocalSubmitter implements Submitter {
     final Interpreter interpreter;
 
     public boolean isAllowed(String operand) {
-        return false; // NO!
+        return true; // NO!
     }
 
     public LocalSubmitter(String sourceCode) {
