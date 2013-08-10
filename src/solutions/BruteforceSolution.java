@@ -14,12 +14,14 @@ import java.util.Random;
 public class BruteforceSolution {
     final Submitter submitter;
 
-    final int ARGS_CNT = 10;
+    final int ARGS_CNT = 20;
+    final long MAX_ARG = (long) 1e15;
     final int DEEP = 3;
 
     final Parser.Node MAIN_ARG = new Parser.Node(Parser.Node.NodeType.ID, "x0", 0);
 
-    final String[] UNARY_OPS = {"not", "shl1", "shr1", "shr4", "shr16"};
+    //final String[] UNARY_OPS = {"not", "shl1", "shr1", "shr4", "shr16"};
+    final String[] UNARY_OPS = {"shl1", "shr4"};
     final String[] BINARY_OPS = {"and", "or", "xor", "plus"};
 
     long[] args, result;
@@ -44,15 +46,24 @@ public class BruteforceSolution {
         Random rnd = new Random();
         long[] res = new long[ARGS_CNT];
         for (int i = 0; i < ARGS_CNT; i++) {
-            res[i] = rnd.nextInt(100000);
+            res[i] = Math.abs(rnd.nextLong()) % MAX_ARG;
         }
+
+        /* Generate 0b011111... */
+        res[0] = 1;
+        for (int i = 0; i < 62; i++)
+            res[0] = res[0] + res[0] + 1;
 
         return res;
     }
 
     boolean tryToSubmit() {
-        return Arrays.equals(Interpreter.eval(root, args), result)
-                && submitter.guess(root.toString());
+        if (Arrays.equals(Interpreter.eval(root, args), result)
+                && submitter.guess(root.toString())) {
+            System.out.println(root);
+            return true;
+        }
+        return false;
     }
 
     boolean findNextChild(Parser.Node cur, int deep) {

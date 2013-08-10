@@ -136,7 +136,7 @@ public class Interpreter {
 
         for (int i = 0; i < 8; i++) {
             long cur = arr & 255;
-            arr >>= 8;
+            arr >>>= 8;
             acc = callFunction(exp.children[2], cur, acc);
         }
 
@@ -155,17 +155,17 @@ public class Interpreter {
 
     long evalShr1(Parser.Node exp) {
         long val = evalExpression(exp.children[0]);
-        return val >> 1;
+        return val >>> 1;
     }
 
     long evalShr4(Parser.Node exp) {
         long val = evalExpression(exp.children[0]);
-        return val >> 4;
+        return val >>> 4;
     }
 
     long evalShr16(Parser.Node exp) {
         long val = evalExpression(exp.children[0]);
-        return val >> 16;
+        return val >>> 16;
     }
 
     long evalAnd(Parser.Node exp) {
