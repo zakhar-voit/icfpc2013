@@ -1,21 +1,18 @@
-package network;
+package solutions;
 
 import eval.Interpreter;
-import eval.InterpreterTest;
+import network.Network;
+import network.Submitter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.Random;
+
 /**
- * Created with IntelliJ IDEA.
- * User: izban
- * Date: 10.08.13
- * Time: 10:22
- * To change this template use File | Settings | File Templates.
+ * @author Ilya Zban(izban@mail.ru)
  */
 public class Solver {
 
@@ -68,7 +65,7 @@ public class Solver {
     public void getProblems() {
         try {
             JSONObject tr = Network.Submit("myproblems", new JSONObject());
-            JSONArray arr = (JSONArray)tr.get("lol");
+            JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
             for (int i = 0; i < arr.size(); i++) Out.println(arr.get(i));
         } catch (Exception e) {
@@ -91,7 +88,9 @@ public class Solver {
         submitter = new Submitter(id);
         a0 = new long[7];
         for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
-        a0[0] = 0; a0[1] = 1; for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
+        a0[0] = 0;
+        a0[1] = 1;
+        for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
 
         a = submitter.eval(a0);
 

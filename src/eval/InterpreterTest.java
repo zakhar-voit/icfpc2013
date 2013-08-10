@@ -1,7 +1,7 @@
 package eval;
 
 import network.Network;
-import network.ResponceUtils;
+import network.ResponseUtils;
 
 import java.util.Arrays;
 
@@ -21,7 +21,7 @@ public class InterpreterTest {
 
     public static void main(String[] args) {
         for (int i = 0; i < PROGRAMS.length; i++) {
-            long[] serverAnswer = ResponceUtils.parseResponse(Network.eval(PROGRAMS[i], ARGS[i]));
+            long[] serverAnswer = ResponseUtils.parseResponse(Network.eval(PROGRAMS[i], ARGS[i]));
             long[] localAnswer = Interpreter.eval(PROGRAMS[i], ARGS[i]);
             assert Arrays.equals(serverAnswer, localAnswer);
         }

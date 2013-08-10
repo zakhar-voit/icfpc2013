@@ -3,35 +3,30 @@ package network;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import javax.lang.model.element.ElementKind;
-
 /**
- * Created with IntelliJ IDEA.
- * User: izban
- * Date: 10.08.13
- * Time: 17:12
- * To change this template use File | Settings | File Templates.
+ * Ilya Zban(izban@mail.ru)
  */
+@SuppressWarnings("unchecked")
 public class Submitter {
     String id;
 
-    Submitter(String myID) {
+    public Submitter(String myID) {
         id = myID;
     }
-                //return new JSONObject();df
+    //return new JSONObject();df
 
-    long[] eval(long[] a) {
+    public long[] eval(long[] a) {
         JSONObject obj = new JSONObject();
         JSONArray arr = new JSONArray();
-        for (int i = 0; i < a.length; i++) arr.add(Long.toHexString(a[i]));
+        for (long anA : a) arr.add(Long.toHexString(anA));
         obj.put("id", id);
         obj.put("arguments", arr);
         obj = Network.Submit("eval", obj);
         String s = obj.get("outputs").toString();
-        return ResponceUtils.parseResponse(s);
+        return ResponseUtils.parseResponse(s);
     }
 
-    boolean guess(String program) {
+    public boolean guess(String program) {
         JSONObject obj = new JSONObject();
         obj.put("id", id);
         obj.put("program", program);

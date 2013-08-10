@@ -3,7 +3,7 @@ package network;
 /**
  * @author Zakhar Voit(zakharvoit@gmail.com)
  */
-public class ResponceUtils {
+public class ResponseUtils {
     static public long[] parseResponse(String response) {
         response = response.replaceAll("[\\[\\]\"\"]", "");
         String[] tokens = response.split(",");

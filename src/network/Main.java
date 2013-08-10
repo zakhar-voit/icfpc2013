@@ -1,6 +1,6 @@
 package network;
 
-import org.json.simple.JSONObject;
+import solutions.Solver;
 
 /**
  * @author Ilya Zban(izban@mail.ru)

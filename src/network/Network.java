@@ -8,7 +8,6 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -52,7 +51,7 @@ public class Network {
                 JSONObject res = new JSONObject();
                 JSONParser parser = new JSONParser();
                 JSONArray arr;
-                arr = (JSONArray)parser.parse(s);
+                arr = (JSONArray) parser.parse(s);
                 res.put("lol", arr);
                 return res;
             }
@@ -85,7 +84,7 @@ public class Network {
     }
 
     /*static public void run() {
-        JSONObject fromTrain = new Network().Submit("train", new JSONObject());
+        JSONObject fromTrain = Network.Submit("train", new JSONObject());
         System.out.println(fromTrain.toString());
 
         JSONObject toEval = new JSONObject();
