@@ -2,6 +2,7 @@ package solutions;
 
 import eval.Interpreter;
 import eval.parser.Parser;
+import network.ServerSubmitter;
 import network.Submitter;
 
 import java.util.Arrays;
@@ -25,11 +26,15 @@ public class BruteforceSolution {
 
     Parser.Node root = new Parser.Node(Parser.Node.NodeType.FUNCTION1, "lambda", 0, MAIN_ARG, null);
 
-    Parser.Node[] currentChildren;
-    int currentChild;
-    int currentDeep;
+    Parser.Node[] nextChildren;
+    int nextChild;
+    int nextDeep;
 
     int currentVar = 1;
+
+    public BruteforceSolution() {
+        this.submitter = new ServerSubmitter(new Solver().randID(false));
+    }
 
     public BruteforceSolution(Submitter submitter) {
         this.submitter = submitter;
@@ -39,7 +44,7 @@ public class BruteforceSolution {
         Random rnd = new Random();
         long[] res = new long[ARGS_CNT];
         for (int i = 0; i < ARGS_CNT; i++) {
-            res[i] = rnd.nextLong();
+            res[i] = rnd.nextInt(100000);
         }
 
         return res;
@@ -56,9 +61,9 @@ public class BruteforceSolution {
 
         for (int i = 0; i < cur.children.length; i++) {
             if (cur.children[i] == null) {
-                currentChildren = cur.children;
-                currentChild = i;
-                currentDeep = deep;
+                nextChildren = cur.children;
+                nextChild = i;
+                nextDeep = deep;
                 return true;
             }
             if (findNextChild(cur.children[i], deep + 1))
@@ -73,6 +78,10 @@ public class BruteforceSolution {
             if (tryToSubmit())
                 return true;
         } else {
+            Parser.Node[] currentChildren = nextChildren;
+            int currentChild = nextChild;
+            int currentDeep = nextDeep;
+
             /* Make const node */
             for (int val = 0; val < 2; val++) {
                 currentChildren[currentChild] = new Parser.Node(Parser.Node.NodeType.CONST, "const", val);
@@ -87,26 +96,27 @@ public class BruteforceSolution {
                     return true;
             }
 
-            if (currentDeep >= DEEP)
-                return false;
+            if (currentDeep < DEEP) {
+                /* Make unary operations */
+                for (String UNARY_OP : UNARY_OPS) {
+                    currentChildren[currentChild] =
+                            new Parser.Node(Parser.Node.NodeType.UNARY_OP, UNARY_OP, 0, new Parser.Node[]{null});
+                    if (rec())
+                        return true;
+                }
 
-            /* Make unary operations */
-            for (String UNARY_OP : UNARY_OPS) {
-                currentChildren[currentChild] =
-                        new Parser.Node(Parser.Node.NodeType.UNARY_OP, UNARY_OP, 0, null);
-                if (rec())
-                    return true;
+                /* Make binary operations */
+                for (String BINARY_OP : BINARY_OPS) {
+                    currentChildren[currentChild] =
+                            new Parser.Node(Parser.Node.NodeType.BINARY_OP, BINARY_OP, 0, null, null);
+                    if (rec())
+                        return true;
+                }
+
             }
 
-            /* Make binary operations */
-            for (String BINARY_OP : BINARY_OPS) {
-                currentChildren[currentChild] =
-                        new Parser.Node(Parser.Node.NodeType.BINARY_OP, BINARY_OP, 0, null, null);
-                if (rec())
-                    return true;
-            }
+            currentChildren[currentChild] = null;
         }
-
         return false;
     }
 

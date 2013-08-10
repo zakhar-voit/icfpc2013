@@ -2,7 +2,7 @@ package solutions;
 
 import eval.Interpreter;
 import network.Network;
-import network.Submitter;
+import network.ServerSubmitter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -20,7 +20,7 @@ public class Solver {
     String id;
     final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(if0 e e e)"};
     long[] a, a0;
-    Submitter submitter;
+    ServerSubmitter submitter;
 
     boolean tryCheck(String s) {
         long[] b = Interpreter.eval(s, a0);
@@ -99,7 +99,7 @@ public class Solver {
             id = randID(true);
         else id = ID;
 
-        submitter = new Submitter(id);
+        submitter = new ServerSubmitter(id);
         a0 = new long[7];
         for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
         a0[0] = 0;

@@ -20,8 +20,7 @@ public class Interpreter {
      * @return value F(arg).
      */
     public static long eval(String source, long arg) {
-        Parser.Node root = Parser.parse(source);
-        return new Interpreter(root).eval(arg);
+        return new Interpreter(source).eval(arg);
     }
 
     /**
@@ -34,21 +33,27 @@ public class Interpreter {
     }
 
     public static long[] eval(Parser.Node root, long[] args) {
-        long[] res = new long[args.length];
-        Interpreter interpreter = new Interpreter(root);
-        for (int i = 0; i < args.length; i++) {
-            res[i] = interpreter.eval(args[i]);
-        }
-
-        return res;
+        return new Interpreter(root).eval(args);
     }
 
     Parser.Node root;
     Stack<Map<String, Long>> callStack = new Stack<>();
     Map<String, Long> context = new HashMap<>();
 
-    Interpreter(Parser.Node root) {
+    public Interpreter(String source) {
+        this.root = Parser.parse(source);
+    }
+
+    public Interpreter(Parser.Node root) {
         this.root = root;
+    }
+
+    public long[] eval(long[] args) {
+        long[] res = new long[args.length];
+        for (int i = 0; i < args.length; i++) {
+            res[i] = eval(args[i]);
+        }
+        return res;
     }
 
     long eval(long value) {

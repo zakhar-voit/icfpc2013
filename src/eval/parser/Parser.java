@@ -1,7 +1,6 @@
 package eval.parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class that builds syntax tree of \BV language
@@ -47,12 +46,22 @@ public class Parser {
 
         @Override
         public String toString() {
-            return "Node{" +
-                    "type=" + type +
-                    ", name='" + name + '\'' +
-                    ", val=" + val +
-                    ", children=" + Arrays.toString(children) +
-                    '}';
+            if (type == NodeType.FUNCTION1)
+                return "(lambda (" + children[0] + ") " + children[1] + ")";
+            else if (type == NodeType.FUNCTION2)
+                return "(lambda (" + children[0] + " " + children[1] + ") " + children[2] + ")";
+            else if (type == NodeType.CONST)
+                return ((Long) val).toString();
+            else if (type == NodeType.ID)
+                return name;
+            else if (type == NodeType.UNARY_OP)
+                return "(" + name + " " + children[0] + ")";
+            else if (type == NodeType.BINARY_OP)
+                return "(" + name + " " + children[0] + " " + children[1] + ")";
+            else if (type == NodeType.TERNARY_OP)
+                return "(" + name + " " + children[0] + " " + children[1] + " " + children[2] + ")";
+
+            throw new RuntimeException("oh shit");
         }
 
         public Node(NodeType type, String name, long val, Node... children) {
