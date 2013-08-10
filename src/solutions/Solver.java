@@ -1,6 +1,5 @@
 package solutions;
 
-import com.sun.corba.se.spi.activation.Server;
 import eval.Interpreter;
 import network.Network;
 import network.ServerSubmitter;
@@ -20,8 +19,8 @@ public class Solver {
 
     String cur;
     String id;
-    public final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(if0 e e e)"};
-    static public final String choice2[]= {"x", "0", "1", "not",     "or",       "and",       "xor",       "plus",       "shl1",     "shr1",     "shr4",     "shr16",     "if0"};
+    static public final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(if0 e e e)"};
+    static public final String choice2[]= {"x", "0", "1", "not",     "or",       "and",       "xor",       "plus",       "shl1",     "shr1",     "shr4",     "shr16",     "if0",       "fold"};
     long[] a, a0;
     ServerSubmitter submitter;
     JSONArray perm;
@@ -70,7 +69,7 @@ public class Solver {
             for (Object anArr : arr) {
                 JSONObject cur = (JSONObject) anArr;
                 Out.println(cur.toString());
-                if (false && cur.get("size").toString().equals("4") && !cur.containsKey("solved")) {
+                if (cur.get("size").toString().equals("5") && !cur.containsKey("solved")) {
                     System.out.println(cur.toString());
                     run(cur.get("id").toString(), (JSONArray)cur.get("operators"));
                     try {
@@ -80,6 +79,7 @@ public class Solver {
                     }
                 }
             }
+            System.out.println(arr.size());
             Out.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class Solver {
 
     public String randID(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 4);
+        sbmt.put("size", 5);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
         perm = (JSONArray)lol.get("operators");
@@ -106,8 +106,8 @@ public class Solver {
 
         submitter = new ServerSubmitter(id, perm);
 
-        a0 = new long[7];
-        for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
+        a0 = new long[15];
+        for (int i = 2; i < 15; i++) a0[i] = Math.abs(rnd.nextLong()) % ((long)1e15);
         a0[0] = 0;
         a0[1] = 1;
         for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
