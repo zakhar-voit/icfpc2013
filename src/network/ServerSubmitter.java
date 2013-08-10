@@ -13,11 +13,13 @@ public class ServerSubmitter implements Submitter {
 
     public boolean isAllowed(String operand) {
         boolean lol = true;
-        for (int i = 3; i < Solver.choice2.length; i++) if (operand == Solver.choice2[i]) lol = false;
+        for (int i = 3; i < Solver.choice2.length; i++) if (operand.equals(Solver.choice2[i])) lol = false;
         if (lol) return true;
         if (start.containsKey("id")) {
-            JSONArray arr = (JSONArray)start.get("operands");
-            for (int i = 0; i < arr.size(); i++) if (arr.get(i).toString().equals(operand)) return true;
+            JSONArray arr = (JSONArray) start.get("operands");
+            for (Object anArr : arr)
+                if (anArr.toString().equals(operand))
+                    return true;
             return false;
         } else {
             return start.get("program").toString().contains(operand);
@@ -51,7 +53,6 @@ public class ServerSubmitter implements Submitter {
     public boolean guess(String program) {
         JSONObject obj = new JSONObject(start);
         obj.put("program", program);
-        if (!start.containsKey("id")) return true;
-        return Network.Submit("guess", obj).get("status").toString().equals("win");
+        return !start.containsKey("id") || Network.Submit("guess", obj).get("status").toString().equals("win");
     }
 }
