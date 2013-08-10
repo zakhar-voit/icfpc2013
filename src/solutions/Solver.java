@@ -70,7 +70,7 @@ public class Solver {
             for (int i = 0; i < arr.size(); i++) {
                 JSONObject cur = (JSONObject) arr.get(i);
                 Out.println(cur.toString());
-                if (cur.get("size").toString().equals("3") && !cur.containsKey("solved")) {
+                if (false && cur.get("size").toString().equals("4") && !cur.containsKey("solved")) {
                     System.out.println(cur.toString());
                     run(cur.get("id").toString());
                     try {
@@ -80,6 +80,7 @@ public class Solver {
                     }
                 }
             }
+            Out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,7 +88,7 @@ public class Solver {
 
     public String randID(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 3);
+        sbmt.put("size", 4);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
         return lol.get("id").toString();
