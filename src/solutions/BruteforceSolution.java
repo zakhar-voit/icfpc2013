@@ -39,7 +39,7 @@ public class BruteforceSolution {
         Random rnd = new Random();
         long[] res = new long[ARGS_CNT];
         for (int i = 0; i < ARGS_CNT; i++) {
-            res[i] = rnd.nextLong();
+            res[i] = rnd.nextInt(100000);
         }
 
         return res;
