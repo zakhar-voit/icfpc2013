@@ -67,7 +67,19 @@ public class Solver {
             JSONObject tr = Network.Submit("myproblems", new JSONObject());
             JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
-            for (int i = 0; i < arr.size(); i++) Out.println(arr.get(i));
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject cur = (JSONObject)arr.get(i);
+                Out.println(cur.toString());
+                if (cur.get("size").toString().equals("3") && !cur.containsKey("solved")) {
+                    System.out.println(cur.toString());
+                    run(cur.get("id").toString());
+                    try {
+                        Thread.sleep(25000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,9 +93,11 @@ public class Solver {
         return lol.get("id").toString();
     }
 
-    public void run() {
+    public void run(String ID) {
         Random rnd = new Random();
-        id = randID(true);
+        if (ID.equals(""))
+            id = randID(true);
+        else id = ID;
 
         submitter = new Submitter(id);
         a0 = new long[7];
