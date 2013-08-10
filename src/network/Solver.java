@@ -4,7 +4,7 @@ import eval.Interpreter;
 import eval.InterpreterTest;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
+import java.util.Random;
 /**
  * Created with IntelliJ IDEA.
  * User: izban
@@ -16,7 +16,7 @@ public class Solver {
 
     String cur;
     String id;
-    final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)"};
+    final String choice[] = {"x", "0", "1", "(not e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(shl1 e)", "(shr1 e)"};
     long[] a, a0;
 
 
@@ -43,7 +43,7 @@ public class Solver {
                     if (j > i) s2 += cur.charAt(j);
                 }
 
-                for (int j = 0; j < 8; j++) {
+                for (int j = 0; j < 10; j++) {
                     if (j >= 3 && balance == 3) break;
                     cur = s1 + choice[j] + s2;
                     if (rec()) return true;
@@ -59,14 +59,24 @@ public class Solver {
         return false;
     }
 
+    public void getProblems() {
+        JSONObject tr = Network.Submit("myproblems", new JSONObject());
+        System.out.println(tr.toString());
+    }
+
     public void run() {
+        Random rnd = new Random();
         JSONObject tr = Network.Submit("train", new JSONObject());
         id = tr.get("id").toString();
         System.out.println(tr.get("challenge").toString());
 
-        a0 = new long[2]; a0[0] = 0; a0[1] = 1; for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
+        //a0 = new long[2];
+        a0 = new long[7];
+        for (int i = 2; i < 7; i++) a0[i] = rnd.nextInt(1000000000);
+        a0[0] = 0; a0[1] = 1; for (int i = 0; i < 62; i++) a0[1] = a0[1] + a0[1] + 1;
+
         JSONArray arr = new JSONArray();
-        arr.add(Long.toHexString(0)); arr.add(Long.toHexString(a0[1]));
+        for (int i = 0; i < a0.length; i++) arr.add(Long.toHexString(a0[i]));
         JSONObject query = new JSONObject();
         query.put("id", id);
         //query.put("program", "(lambda (x) (xor (or x 1) (and x x)))");

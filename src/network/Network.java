@@ -33,19 +33,25 @@ public class Network {
         try {
             myUrl = new URL(getURL(x));
             myConnect = (HttpURLConnection) myUrl.openConnection();
-            myConnect.setRequestMethod("POST");
 
-            myConnect.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(myConnect.getOutputStream());
-            wr.writeBytes(request.toString());
-            wr.flush();
-            wr.close();
+            if (!x.equals("myproblems")) {
+                myConnect.setRequestMethod("POST");
+
+                myConnect.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(myConnect.getOutputStream());
+                wr.writeBytes(request.toString());
+                wr.flush();
+                wr.close();
+            }
 
             InputStream is = myConnect.getInputStream();
             Scanner in = new Scanner(is);
             String s = "{}";
             if (in.hasNextLine()) s = in.nextLine();
-
+            if (x.equals("myproblems")) {
+                System.out.println(s);
+                return new JSONObject();
+            }
             JSONParser parser = new JSONParser();
             JSONObject res = (JSONObject) parser.parse(s);
 

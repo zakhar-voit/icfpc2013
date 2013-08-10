@@ -6,6 +6,7 @@ package network;
 public class Main {
 
     public void run() {
+        //new Solver().getProblems();
         new Solver().run();
         //new Network().run();
     }
