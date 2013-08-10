@@ -68,7 +68,7 @@ public class Solver {
             JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
             for (int i = 0; i < arr.size(); i++) {
-                JSONObject cur = (JSONObject)arr.get(i);
+                JSONObject cur = (JSONObject) arr.get(i);
                 Out.println(cur.toString());
                 if (cur.get("size").toString().equals("3") && !cur.containsKey("solved")) {
                     System.out.println(cur.toString());

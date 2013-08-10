@@ -1,9 +1,4 @@
-package network;
-
-import org.json.simple.JSONObject;
-import sun.awt.windows.ThemeReader;
-
-import java.awt.font.NumericShaper;
+package solutions;
 
 /**
  * @author Ilya Zban(izban@mail.ru)
