@@ -8,6 +8,10 @@ import eval.Interpreter;
 public class LocalSubmitter implements Submitter {
     final Interpreter interpreter;
 
+    public boolean isAllowed(String operand) {
+        return false; // NO!
+    }
+
     public LocalSubmitter(String sourceCode) {
         interpreter = new Interpreter(sourceCode);
     }
