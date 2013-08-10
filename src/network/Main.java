@@ -7,10 +7,6 @@ import org.json.simple.JSONObject;
  */
 public class Main {
 
-    public String randID() {
-        return Network.Submit("train", new JSONObject()).get("id").toString();
-    }
-
     public void run() {
         //new Solver().getProblems();
         new Solver().run();
