@@ -2,7 +2,6 @@ package solutions;
 
 import eval.Interpreter;
 import eval.parser.Parser;
-import network.ServerSubmitter;
 import network.Submitter;
 
 import java.util.Arrays;
@@ -12,6 +11,8 @@ import java.util.Random;
  * @author Zakhar Voit(zakharvoit@gmail.com)
  */
 public class BruteforceSolution {
+    final boolean DEBUG;
+
     final Submitter submitter;
 
     final int ARGS_CNT = 20;
@@ -34,12 +35,14 @@ public class BruteforceSolution {
 
     int currentVar = 1;
 
-    public BruteforceSolution() {
-        this.submitter = new ServerSubmitter(new Solver().randID(false));
-    }
-
     public BruteforceSolution(Submitter submitter) {
         this.submitter = submitter;
+        this.DEBUG = false;
+    }
+
+    public BruteforceSolution(Submitter submitter, boolean debug) {
+        this.submitter = submitter;
+        this.DEBUG = debug;
     }
 
     long[] generateArgs() {
@@ -60,7 +63,8 @@ public class BruteforceSolution {
     boolean tryToSubmit() {
         if (Arrays.equals(Interpreter.eval(root, args), result)
                 && submitter.guess(root.toString())) {
-            System.out.println(root);
+            if (DEBUG)
+                System.out.println(root);
             return true;
         }
         return false;
@@ -109,17 +113,17 @@ public class BruteforceSolution {
 
             if (currentDeep < DEEP) {
                 /* Make unary operations */
-                for (String UNARY_OP : UNARY_OPS) {
+                for (String unaryOp : UNARY_OPS) {
                     currentChildren[currentChild] =
-                            new Parser.Node(Parser.Node.NodeType.UNARY_OP, UNARY_OP, 0, new Parser.Node[]{null});
+                            new Parser.Node(Parser.Node.NodeType.UNARY_OP, unaryOp, 0, new Parser.Node[]{null});
                     if (rec())
                         return true;
                 }
 
                 /* Make binary operations */
-                for (String BINARY_OP : BINARY_OPS) {
+                for (String binaryOp : BINARY_OPS) {
                     currentChildren[currentChild] =
-                            new Parser.Node(Parser.Node.NodeType.BINARY_OP, BINARY_OP, 0, null, null);
+                            new Parser.Node(Parser.Node.NodeType.BINARY_OP, binaryOp, 0, null, null);
                     if (rec())
                         return true;
                 }
