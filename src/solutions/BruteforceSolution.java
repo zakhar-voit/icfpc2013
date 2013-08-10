@@ -12,6 +12,7 @@ import java.util.Random;
  */
 public class BruteforceSolution {
     final boolean DEBUG;
+    final boolean USE_TERNARY_OPERATIONS = true;
 
     final Submitter submitter;
 
@@ -87,7 +88,7 @@ public class BruteforceSolution {
         return false;
     }
 
-    boolean rec() {
+    boolean rec(boolean wasFold) {
         if (!findNextChild(root, 0)) {
             if (tryToSubmit())
                 return true;
@@ -99,14 +100,14 @@ public class BruteforceSolution {
             /* Make const node */
             for (int val = 0; val < 2; val++) {
                 currentChildren[currentChild] = new Parser.Node(Parser.Node.NodeType.CONST, "const", val);
-                if (rec())
+                if (rec(wasFold))
                     return true;
             }
 
             /* Make ID node */
             for (int name = 0; name < currentVar; name++) {
                 currentChildren[currentChild] = new Parser.Node(Parser.Node.NodeType.ID, "x" + name, 0);
-                if (rec())
+                if (rec(wasFold))
                     return true;
             }
 
@@ -117,7 +118,7 @@ public class BruteforceSolution {
                         continue;
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.UNARY_OP, unaryOp, 0, new Parser.Node[]{null});
-                    if (rec())
+                    if (rec(wasFold))
                         return true;
                 }
 
@@ -127,10 +128,33 @@ public class BruteforceSolution {
                         continue;
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.BINARY_OP, binaryOp, 0, null, null);
-                    if (rec())
+                    if (rec(wasFold))
                         return true;
                 }
 
+                if (USE_TERNARY_OPERATIONS) {
+
+                /* Make fold(once)*/
+                    if (!wasFold && submitter.isAllowed("fold")) {
+                        wasFold = true;
+                        Parser.Node firstArg = new Parser.Node(Parser.Node.NodeType.ID, "x" + currentVar++, 0);
+                        Parser.Node secondArg = new Parser.Node(Parser.Node.NodeType.ID, "x" + currentVar++, 0);
+                        currentChildren[currentChild] =
+                                new Parser.Node(Parser.Node.NodeType.TERNARY_OP, "fold", 0, null, null,
+                                        new Parser.Node(Parser.Node.NodeType.FUNCTION2, "lambda", 0,
+                                                firstArg, secondArg, null));
+                        if (rec(wasFold))
+                            return true;
+                    }
+
+                /* Make if0 */
+                    if (submitter.isAllowed("if0")) {
+                        currentChildren[currentChild] =
+                                new Parser.Node(Parser.Node.NodeType.TERNARY_OP, "if0", 0, null, null, null);
+                        if (rec(wasFold))
+                            return true;
+                    }
+                }
             }
 
             currentChildren[currentChild] = null;
@@ -141,7 +165,7 @@ public class BruteforceSolution {
     boolean solve() {
         args = generateArgs();
         result = submitter.eval(args);
-        return rec();
+        return rec(false);
     }
 }
 
