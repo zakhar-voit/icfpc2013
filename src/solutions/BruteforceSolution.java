@@ -21,8 +21,7 @@ public class BruteforceSolution {
 
     final Parser.Node MAIN_ARG = new Parser.Node(Parser.Node.NodeType.ID, "x0", 0);
 
-    //final String[] UNARY_OPS = {"not", "shl1", "shr1", "shr4", "shr16"};
-    final String[] UNARY_OPS = {"shl1", "shr4"};
+    final String[] UNARY_OPS = {"not", "shl1", "shr1", "shr4", "shr16"};
     final String[] BINARY_OPS = {"and", "or", "xor", "plus"};
 
     long[] args, result;
@@ -114,6 +113,8 @@ public class BruteforceSolution {
             if (currentDeep < DEEP) {
                 /* Make unary operations */
                 for (String unaryOp : UNARY_OPS) {
+                    if (!submitter.isAllowed(unaryOp))
+                        continue;
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.UNARY_OP, unaryOp, 0, new Parser.Node[]{null});
                     if (rec())
@@ -122,6 +123,8 @@ public class BruteforceSolution {
 
                 /* Make binary operations */
                 for (String binaryOp : BINARY_OPS) {
+                    if (!submitter.isAllowed(binaryOp))
+                        continue;
                     currentChildren[currentChild] =
                             new Parser.Node(Parser.Node.NodeType.BINARY_OP, binaryOp, 0, null, null);
                     if (rec())
