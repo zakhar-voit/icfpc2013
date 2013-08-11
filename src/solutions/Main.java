@@ -12,12 +12,15 @@ public class Main {
 
     public void run() {
         //new Solver().getProblems();
-        for (int i = 0; i < 20; i++) {
-            //new Solver().run("", new JSONArray());
-            JSONObject start = Solver.randID_1(true);
-            System.out.println(Boolean.toString(new BruteforceSolution(new ServerSubmitter(start.get("id").toString(), (JSONArray)start.get("operators")), true).solve()));
+        final int iters = 50;
+        int ok = 0;
+        for (int i = 0; i < iters; i++) {
+            if (new Solver().run("", new JSONArray())) ok++;
+            System.out.println((i + 1) + "/" + iters + " calced, " + ok + " is correct");
+            //JSONObject start = Solver.randID_1(true);
+            //System.out.println(Boolean.toString(new BruteforceSolution(new ServerSubmitter(start.get("id").toString(), (JSONArray)start.get("operators")), true).solve()));
             try {
-                Thread.sleep(25000);
+                Thread.sleep(20200);
             } catch (Exception e) {
                 e.printStackTrace();
             }
