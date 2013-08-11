@@ -28,7 +28,14 @@ public class Solver {
     int maxSize;
 
     boolean tryCheck(String s) {
-        long[] b = Interpreter.eval(s, a0);
+        long[] b;
+        try {
+            b = Interpreter.eval(s, a0);
+        } catch (Exception e) {
+            System.out.println(s);
+            e.printStackTrace();
+            return true;
+        }
         boolean ok = true;
 
         for (int i = 0; i < b.length; i++) ok &= b[i] == a[i];
@@ -64,9 +71,9 @@ public class Solver {
             if (cur.charAt(i) == ')') balance--;
             if (i < cur.length() - 1 && cur.charAt(i) == 'f' && cur.charAt(i + 1) == 'o') {
                 wasfold = balance;
-                needy = true;
             }
-            if (wasfold != -1 && balance < wasfold) needy = false;
+            if (wasfold != -1 && balance <= wasfold) needy = false;
+            if (wasfold != -1 && i < cur.length() - 1 && cur.charAt(i) == 'l' && cur.charAt(i + 1) == 'a') needy = true;
 
             if (cur.charAt(i) == 'e') {
                 String s1 = "", s2 = "";
@@ -79,14 +86,15 @@ public class Solver {
                 for (int j = 0; j < choice.length; j++) {
                     if (j >= 4 && balance == 6) break;
                     if (j == 4 || j == 9 || j == 13 || j == 14) nsize++;
-                    if (j == 1 && !needy) continue;
+                    if (j == 1 && (!needy || balance <= wasfold)) continue;
                     if (j >= 14 && wasfold != -1) continue;
 
                     if (nsize > maxSize) continue;
                     if (!submitter.isAllowed(choice2[j])) continue;
                     cur = s1 + choice[j] + s2;
                     csize = nsize;
-                    if (rec()) return true;
+                    if (rec())
+                        return true;
                 }
 
                 ok = false;
@@ -131,13 +139,13 @@ public class Solver {
     }
 
     public String randID(boolean f) {
-        maxSize = 11;
+        maxSize = 10;
         JSONObject sbmt = new JSONObject();
         sbmt.put("size", maxSize);
-        JSONArray arr = new JSONArray(); arr.add("fold");
+        JSONArray arr = new JSONArray(); arr.add("tfold");
         //sbmt.put("operators", arr);
         JSONObject lol = Network.Submit("train", sbmt);
-        if (f) System.out.println(lol.get("challenge").toString());
+        if (f) System.out.println(lol.toString());
         perm = (JSONArray)lol.get("operators");
         return lol.get("id").toString();
     }
@@ -157,6 +165,7 @@ public class Solver {
         else {
             id = ID;
             perm = arr;
+            maxSize = 10;
         }
 
         submitter = new ServerSubmitter(id, perm);
