@@ -110,24 +110,27 @@ public class Solver {
             JSONArray arr = (JSONArray) tr.get("lol");
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
             int ok = 0, cnt = 0;
-            for (Object anArr : arr) {
-                JSONObject cur = (JSONObject) anArr;
-                Out.println(cur.toString());
-                if (cur.get("size").toString().equals("9")) {
-                    if (cur.containsKey("solved") && cur.get("solved").toString().equals("true")) {
+            maxSize = 10;
+            for (int cSize = 1; cSize <= 10; cSize++) {
+                System.out.println(cSize);
+                for (Object anArr : arr) {
+                    JSONObject cur = (JSONObject) anArr;
+                    if (maxSize == 1) Out.println(cur.toString());
+                    if (cur.get("size").toString().equals(Integer.toString(cSize))) {
+                        if (cur.containsKey("solved") && (cur.get("solved").toString().equals("true") || cur.get("timeLeft").toString().equals("0"))) {
+                            cnt++;
+                            if (cur.get("solved").toString().equals("true")) ok++;
+                            continue;
+                        }
+                        System.out.println(cur.toString());
+                        if (run(cur.get("id").toString(), (JSONArray)cur.get("operators"))) ok++;
                         cnt++;
-                        ok++;
-                        continue;
-                    }
-                    System.out.println(cur.toString());
-                    maxSize = Integer.parseInt(cur.get("size").toString());
-                    if (run(cur.get("id").toString(), (JSONArray)cur.get("operators"))) ok++;
-                    cnt++;
-                    System.out.println(cnt + "/40 is solved, " + ok + " is correct");
-                    try {
-                        Thread.sleep(20200);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println(cnt + "/40 is solved, " + ok + " is correct");
+                        try {
+                            Thread.sleep(20200);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -141,7 +144,7 @@ public class Solver {
     public String randID(boolean f) {
         maxSize = 10;
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", maxSize);
+        sbmt.put("size", 11);
         JSONArray arr = new JSONArray(); arr.add("tfold");
         //sbmt.put("operators", arr);
         JSONObject lol = Network.Submit("train", sbmt);

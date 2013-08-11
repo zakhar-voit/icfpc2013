@@ -31,6 +31,7 @@ public class ServerSubmitter implements Submitter {
 
     public ServerSubmitter(String id, JSONArray arr) {
         start.put("id", id);
+        for (int i = 0; i < arr.size(); i++) if (arr.get(i).toString().equals("fold")) arr.set(i, "tfold");
         start.put("operands", arr);
         v.add(System.currentTimeMillis());
     }
@@ -46,7 +47,7 @@ public class ServerSubmitter implements Submitter {
 
     public boolean timeExpired() {
         long ctime = System.currentTimeMillis();
-        if (v.size() >= 1 && ctime - v.get(0) > 302000) return true;
+        if (v.size() >= 1 && ctime - v.get(0) > 80000) return true;
         return false;
     }
 
