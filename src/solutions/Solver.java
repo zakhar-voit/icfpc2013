@@ -21,7 +21,7 @@ public class Solver {
     String cur;
     String id;
     static public final String choice[] = {"x", "y", "0", "1", "(not e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(if0 e e e)", "(fold x 0 (lambda (x y) e))", "(fold e e (lambda (x y) e))"};
-    static public final String choice2[]= {"x", "y", "0", "1", "not",     "shl1",     "shr1",     "shr4",     "shr16",     "or",       "and",       "xor",       "plus",       "if0",         "tfold",                        "fold"};
+    static public final String choice2[] = {"x", "y", "0", "1", "not", "shl1", "shr1", "shr4", "shr16", "or", "and", "xor", "plus", "if0", "tfold", "fold"};
     long[] a, a0;
     ServerSubmitter submitter;
     JSONArray perm;
@@ -46,18 +46,19 @@ public class Solver {
         System.out.println("wrong try");
         long[] x = ResponseUtils.parseResponse(res.get("values").toString());
         long a1[] = new long[a0.length + 1];
-        for (int i = 0; i < a0.length; i++) a1[i] = a0[i];
+        System.arraycopy(a0, 0, a1, 0, a0.length);
         a1[a0.length] = x[0];
         a0 = a1;
 
         long a2[] = new long[a.length + 1];
-        for (int i = 0; i < a.length; i++) a2[i] = a[i];
+        System.arraycopy(a, 0, a2, 0, a.length);
         a2[a.length] = x[1];
         a = a2;
         return false;
     }
 
     int csize;
+
     boolean rec() {
         if (submitter.timeExpired()) return false;
 
@@ -123,7 +124,7 @@ public class Solver {
                             continue;
                         }
                         System.out.println(cur.toString());
-                        if (run(cur.get("id").toString(), (JSONArray)cur.get("operators"))) ok++;
+                        if (run(cur.get("id").toString(), (JSONArray) cur.get("operators"))) ok++;
                         cnt++;
                         System.out.println(cnt + "/40 is solved, " + ok + " is correct");
                         try {
@@ -145,11 +146,13 @@ public class Solver {
         maxSize = 10;
         JSONObject sbmt = new JSONObject();
         sbmt.put("size", 11);
-        JSONArray arr = new JSONArray(); arr.add("tfold");
+        @SuppressWarnings("unused")
+        JSONArray arr = new JSONArray();
+        arr.add("tfold");
         //sbmt.put("operators", arr);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.toString());
-        perm = (JSONArray)lol.get("operators");
+        perm = (JSONArray) lol.get("operators");
         return lol.get("id").toString();
     }
 

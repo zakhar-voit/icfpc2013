@@ -25,7 +25,7 @@ public class Network {
         return "http://icfpc2013.cloudapp.net/" + x + "?auth=" + getSecret();
     }
 
-    static public JSONObject submit(String x, JSONObject request) {
+    static public JSONObject Submit(String x, JSONObject request) {
         URL myUrl;
         HttpURLConnection myConnect = null;
 
@@ -75,32 +75,12 @@ public class Network {
             arr.add(Long.toHexString(arg));
         obj.put("program", program);
         obj.put("arguments", arr);
-        JSONObject res = submit("eval", obj);
+        JSONObject res = Submit("eval", obj);
 
         String s = res.get("status").toString();
         if (s.equals("ok")) {
             return res.get("outputs").toString();
         } else return "-1";
     }
-
-    /*static public void run() {
-        JSONObject fromTrain = Network.submit("train", new JSONObject());
-        System.out.println(fromTrain.toString());
-
-        JSONObject toEval = new JSONObject();
-        toEval.put("id", fromTrain.get("id"));
-        JSONArray arr = new JSONArray();
-        Random rnd = new Random();
-        for (int i = 0; i < 10; i++) arr.add(rnd.nextInt(1000000000));
-        toEval.put("arguments", arr);
-        System.out.println(submit("eval", toEval));
-
-        JSONObject toSubmit = new JSONObject();
-        toSubmit.put("id", fromTrain.get("id"));
-        toSubmit.put("program", fromTrain.get("challenge"));
-        JSONObject fromGuess = submit("guess", toSubmit);
-        System.out.println(fromGuess.toString());
-        System.out.println(arr.toString());
-    }          */
 }
 

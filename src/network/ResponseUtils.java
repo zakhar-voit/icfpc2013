@@ -25,10 +25,11 @@ public class ResponseUtils {
         return c - '0';
     }
 
+    @SuppressWarnings("unused")
     static public String toString(long[] arr) {
         StringBuilder res = new StringBuilder();
         for (long item : arr) {
-            res.append(Long.toHexString(item) + " ");
+            res.append(Long.toHexString(item)).append(" ");
         }
         return res.toString().trim();
     }

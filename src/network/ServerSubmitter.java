@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @SuppressWarnings("unchecked")
 public class ServerSubmitter implements Submitter {
     JSONObject start = new JSONObject();
-    ArrayList<Long> v = new ArrayList<Long>();
+    ArrayList<Long> v = new ArrayList<>();
 
     public boolean isAllowed(String operand) {
         boolean lol = true;
@@ -36,6 +36,7 @@ public class ServerSubmitter implements Submitter {
         v.add(System.currentTimeMillis());
     }
 
+    @SuppressWarnings("unused")
     public ServerSubmitter(String s) {
         if (s.charAt(0) == '(') {
             start.put("program", s);
@@ -47,8 +48,7 @@ public class ServerSubmitter implements Submitter {
 
     public boolean timeExpired() {
         long ctime = System.currentTimeMillis();
-        if (v.size() >= 1 && ctime - v.get(0) > 80000) return true;
-        return false;
+        return v.size() >= 1 && ctime - v.get(0) > 80000;
     }
 
     private void not429() {

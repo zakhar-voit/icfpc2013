@@ -21,7 +21,7 @@ public class BruteforceSolution {
     final int ARGS_CNT = 20;
     final long MAX_ARG = (long) 1e15;
     final int DEEP = 4;
-    final int SIZE = Solver.SIZE;
+    final int SIZE = 6;
 
     int size = 0;
 
@@ -43,6 +43,7 @@ public class BruteforceSolution {
 
     int currentVar = 1;
 
+    @SuppressWarnings("unused")
     public BruteforceSolution(Submitter submitter) {
         this.submitter = submitter;
         this.DEBUG = false;
@@ -146,6 +147,7 @@ public class BruteforceSolution {
             if (tryToSubmit())
                 return true;
         } else {
+            @SuppressWarnings("all")
             Parser.Node[] currentChildren = nextChildren;
             Parser.Node currentParent = nextParent;
             int currentChild = nextChild;

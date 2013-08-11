@@ -1,11 +1,5 @@
 package solutions;
 
-import network.ServerSubmitter;
-import network.Submitter;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 /**
  * @author Ilya Zban(izban@mail.ru)
  */
