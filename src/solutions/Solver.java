@@ -20,13 +20,12 @@ public class Solver {
 
     String cur;
     String id;
-    static public final String choice[] = {"x", "y", "0", "1", "(not e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(if0 e e e)", "(fold x 0 (lambda (x y) e))"};
-    static public final String choice2[]= {"x", "y", "0", "1", "not",     "shl1",     "shr1",     "shr4",     "shr16",     "or",       "and",       "xor",       "plus",       "if0",         "fold"};
+    static public final String choice[] = {"x", "y", "0", "1", "(not e)", "(shl1 e)", "(shr1 e)", "(shr4 e)", "(shr16 e)", "(or e e)", "(and e e)", "(xor e e)", "(plus e e)", "(if0 e e e)", "(fold x 0 (lambda (x y) e))", "(fold e e (lambda (x y) e))"};
+    static public final String choice2[]= {"x", "y", "0", "1", "not",     "shl1",     "shr1",     "shr4",     "shr16",     "or",       "and",       "xor",       "plus",       "if0",         "tfold",                        "fold"};
     long[] a, a0;
     ServerSubmitter submitter;
     JSONArray perm;
-    final int maxSize = 9;
-
+    int maxSize;
 
     boolean tryCheck(String s) {
         long[] b = Interpreter.eval(s, a0);
@@ -81,7 +80,7 @@ public class Solver {
                     if (j >= 4 && balance == 6) break;
                     if (j == 4 || j == 9 || j == 13 || j == 14) nsize++;
                     if (j == 1 && !needy) continue;
-                    if (j == 14 && wasfold != -1) continue;
+                    if (j >= 14 && wasfold != -1) continue;
 
                     if (nsize > maxSize) continue;
                     if (!submitter.isAllowed(choice2[j])) continue;
@@ -106,13 +105,14 @@ public class Solver {
             for (Object anArr : arr) {
                 JSONObject cur = (JSONObject) anArr;
                 Out.println(cur.toString());
-                if (cur.get("size").toString().equals("8")) {
+                if (cur.get("size").toString().equals("9")) {
                     if (cur.containsKey("solved") && cur.get("solved").toString().equals("true")) {
                         cnt++;
                         ok++;
                         continue;
                     }
                     System.out.println(cur.toString());
+                    maxSize = Integer.parseInt(cur.get("size").toString());
                     if (run(cur.get("id").toString(), (JSONArray)cur.get("operators"))) ok++;
                     cnt++;
                     System.out.println(cnt + "/40 is solved, " + ok + " is correct");
@@ -131,9 +131,10 @@ public class Solver {
     }
 
     public String randID(boolean f) {
+        maxSize = 11;
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 9);
-        JSONArray arr = new JSONArray(); arr.add("tfold");
+        sbmt.put("size", maxSize);
+        JSONArray arr = new JSONArray(); arr.add("fold");
         //sbmt.put("operators", arr);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
@@ -143,7 +144,7 @@ public class Solver {
 
     public static JSONObject randID_1(boolean f) {
         JSONObject sbmt = new JSONObject();
-        sbmt.put("size", 9);
+        sbmt.put("size", 10);
         JSONObject lol = Network.Submit("train", sbmt);
         if (f) System.out.println(lol.get("challenge").toString());
         return lol;

@@ -31,7 +31,6 @@ public class ServerSubmitter implements Submitter {
 
     public ServerSubmitter(String id, JSONArray arr) {
         start.put("id", id);
-        for (int i = 0; i < arr.size(); i++) if (arr.get(i).toString().equals("tfold")) arr.set(i, "fold");
         start.put("operands", arr);
         v.add(System.currentTimeMillis());
     }
