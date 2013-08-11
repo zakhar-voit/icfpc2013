@@ -111,7 +111,7 @@ public class Solver {
             PrintWriter Out = new PrintWriter(new BufferedWriter(new FileWriter("tasks.txt")));
             int ok = 0, cnt = 0;
             maxSize = 10;
-            for (int cSize = 1; cSize <= 10; cSize++) {
+            for (int cSize = 1; cSize <= 30; cSize++) {
                 System.out.println(cSize);
                 for (Object anArr : arr) {
                     JSONObject cur = (JSONObject) anArr;
