@@ -2,6 +2,7 @@ package solutions;
 
 import eval.Interpreter;
 import network.Network;
+import network.ResponseUtils;
 import network.ServerSubmitter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -32,8 +33,22 @@ public class Solver {
         boolean ok = true;
 
         for (int i = 0; i < b.length; i++) ok &= b[i] == a[i];
-        return ok && submitter.guess(s);
+        if (!ok) return false;
+        JSONObject res = submitter.guessFull(s);
+        if (res.get("status").equals("win")) return true;
 
+        System.out.println("wrong try");
+        long[] x = ResponseUtils.parseResponse(res.get("values").toString());
+        long a1[] = new long[a0.length + 1];
+        for (int i = 0; i < a0.length; i++) a1[i] = a0[i];
+        a1[a0.length] = x[0];
+        a0 = a1;
+
+        long a2[] = new long[a.length + 1];
+        for (int i = 0; i < a.length; i++) a2[i] = a[i];
+        a2[a.length] = x[1];
+        a = a2;
+        return false;
     }
 
     int csize;
@@ -144,7 +159,7 @@ public class Solver {
         }
 
         submitter = new ServerSubmitter(id, perm);
-        //submitter = new ServerSubmitter("(lambda (x_7171) (plus (xor (xor x_7171 0) 1) x_7171))");
+        //submitter = new ServerSubmitter("(lambda (x_5415) (fold x_5415 0 (lambda (x_5415 x_5416) (xor (shl1 x_5415) x_5415))))");
 
         a0 = new long[15];
         for (int i = 2; i < 15; i++) a0[i] = Math.abs(rnd.nextLong());

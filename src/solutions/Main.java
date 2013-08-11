@@ -12,7 +12,7 @@ public class Main {
 
     public void run() {
         //new Solver().getProblems();
-        final int iters = 50;
+        final int iters = 100;
         int ok = 0;
         for (int i = 0; i < iters; i++) {
             if (new Solver().run("", new JSONArray())) ok++;

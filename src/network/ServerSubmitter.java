@@ -33,6 +33,7 @@ public class ServerSubmitter implements Submitter {
         start.put("id", id);
         for (int i = 0; i < arr.size(); i++) if (arr.get(i).toString().equals("tfold")) arr.set(i, "fold");
         start.put("operands", arr);
+        v.add(System.currentTimeMillis());
     }
 
     public ServerSubmitter(String s) {
@@ -41,6 +42,7 @@ public class ServerSubmitter implements Submitter {
         } else {
             start.put("id", s);
         }
+        v.add(System.currentTimeMillis());
     }
 
     public boolean timeExpired() {
@@ -52,8 +54,9 @@ public class ServerSubmitter implements Submitter {
     private void not429() {
         try {
             long ctime = System.currentTimeMillis();
-            if (v.size() >= 5 && ctime - v.get(v.size() - 5) < 20200)
-                Thread.sleep(20200 - (ctime - v.get(v.size() - 5)));
+            if (v.size() >= 5 && ctime - v.get(v.size() - 5) < 21000) {
+                Thread.sleep(21000 - (ctime - v.get(v.size() - 5)));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,6 +81,21 @@ public class ServerSubmitter implements Submitter {
         JSONObject obj = new JSONObject(start);
         obj.put("program", program);
         boolean ans = !start.containsKey("id") || Network.Submit("guess", obj).get("status").toString().equals("win");
+        v.add(System.currentTimeMillis());
+        return ans;
+    }
+
+    public JSONObject guessFull(String program) {
+        not429();
+
+        JSONObject obj = new JSONObject(start);
+        obj.put("program", program);
+        JSONObject ans = new JSONObject();
+        if (start.containsKey("id")) {
+            ans = Network.Submit("guess", obj);
+        } else {
+            ans.put("status", "win");
+        }
         v.add(System.currentTimeMillis());
         return ans;
     }
